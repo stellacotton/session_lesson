@@ -1,5 +1,35 @@
-ADMIN_USER="hackbright"
-ADMIN_PASSWORD=803096023
+import sqlite3
+
+def connect_to_db():
+    global CONN, DB
+    CONN = sqlite3.connect("thewall.db")
+    DB = CONN.cursor()
+
+
+
 
 def authenticate(username, password):
-    return False
+    connect_to_db()
+    query = """SELECT id, username, password FROM users WHERE username = ? and password = ?"""
+    DB.execute(query, (username, password))
+    row = DB.fetchone()
+    user_id = row[0]
+    if row:
+        return user_id
+
+    else:
+        return None
+
+def get_user_by_name(username):
+    connect_to_db()
+    query = """SELECT id FROM users WHERE username = ?"""
+    DB.execute(query, (username,))
+    user_id = DB.fetchone()
+    return user_id
+
+def get_wall_posts(user_id):
+    connect_to_db()
+    query = """SELECT username, created_at, content FROM wall_posts LEFT JOIN users ON users.id = wall_posts.author_id WHERE owner_id = ?"""
+    DB.execute(query, (user_id))
+    rows = DB.fetchall()
+    return rows
