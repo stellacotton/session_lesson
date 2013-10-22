@@ -45,7 +45,7 @@ def post_to_wall(username):
     # return render_template("test.html", a=id_from_users, b=author_id_from_users, c=date_time, d=post)
 
 
-@app.route("/register")
+@app.route("/register", methods=["POST"])
 def register():
     if session.get('username'):
         real_name = session.get('actual_username')
@@ -53,10 +53,28 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route("/register/create_account", methods=["POST"])
+def create_account():
+    if session.get('username'):
+        real_name = session.get('actual_username')
+        return redirect("/user/%s"%real_name)
+    else:
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if model.get_user_by_name(username) == "Nope":
+            model.register_new_user(username, password)
+            flash("Account created!")
+            return redirect(url_for("process_login"))
+        else:
+            flash("You already exist!")
+            return redirect(url_for("register"))
+
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
 
 if __name__ == "__main__":
     app.run(debug = True)
