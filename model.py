@@ -25,11 +25,18 @@ def get_user_by_name(username):
     query = """SELECT id FROM users WHERE username = ?"""
     DB.execute(query, (username,))
     user_id = DB.fetchone()
-    return user_id
+    return user_id[0]
 
 def get_wall_posts(user_id):
     connect_to_db()
     query = """SELECT username, created_at, content FROM wall_posts LEFT JOIN users ON users.id = wall_posts.author_id WHERE owner_id = ?"""
-    DB.execute(query, (user_id))
+    DB.execute(query, (user_id,))
     rows = DB.fetchall()
     return rows
+
+
+def post_to_wall(user_id, author_id, datetime, content):
+    connect_to_db()
+    query = """INSERT into wall_posts(owner_id, author_id, created_at, content) VALUES (?,?,?,?)"""
+    DB.execute(query, (user_id, author_id, datetime, content))
+    CONN.commit()
