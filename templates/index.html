@@ -3,7 +3,7 @@
 {% block body %}
 
             <form class="signin" action="/" method="POST">
-                <h2 class="signin-heading">Please sign in</h2>
+                <h2 class="signin-heading">Please sign in:</h2>
                 <ul>
                     {% for message in get_flashed_messages() %}
                     <li>{{message}}</li>

@@ -8,8 +8,9 @@ app.secret_key = "shhhhthisisasecret"
 @app.route("/")
 def index():
     if session.get("username"):
-        flash("User %s is logged in"%session['username'])
-        return render_template("index.html")
+        flash("User %s is logged in"%session['actual_username'])
+        username = session['actual_username']
+        return redirect("/user/%s"%username)  
     else:
         return render_template("index.html")
 
@@ -24,7 +25,7 @@ def process_login():
         session['username'] = auth_user
         session['actual_username'] = username
     else:
-        flash("Password incorrect, there may be a ferret stampede in progress!")
+        flash("Password incorrect, please try again!")
 
     return redirect(url_for("index"))
 
@@ -45,7 +46,7 @@ def post_to_wall(username):
     # return render_template("test.html", a=id_from_users, b=author_id_from_users, c=date_time, d=post)
 
 
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET"])
 def register():
     if session.get('username'):
         real_name = session.get('actual_username')

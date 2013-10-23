@@ -11,8 +11,8 @@ def authenticate(username, password):
     query = """SELECT id, username, password FROM users WHERE username = ? and password = ?"""
     DB.execute(query, (username, password))
     row = DB.fetchone()
-    user_id = row[0]
     if row:
+        user_id = row[0]
         return user_id
 
     else:
