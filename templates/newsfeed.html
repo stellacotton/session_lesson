@@ -1,0 +1,27 @@
+{% extends 'master.html' %}
+
+{% block body %}
+
+<h2>Newsfeed: </h2>
+{% for items in wall_posts %}
+<div>
+    <ul class="list-group">
+        <li class="list-group-item"><a href="/user/{{ items[3] }}">{{ items[3] }}</a> wrote on <a href="/user/{{ items[2] }}">{{ items[2] }}'s wall</a></li>
+        <li class="list-group-item">Date: {{ items[1] }} </li>
+        <li class="list-group-item"> Post: {{ items[4] }}</li>
+    </ul>
+</div>
+{% endfor %}
+
+{% if session_id %}
+<br>
+<form method="POST" action='/user/{{ username }}/post'>
+<h3>Post a Message to {{ username }}:</h3>
+    <input type="textarea" class="form-control" placeholder="What's on your mind?" name="post">
+    <br>
+    <input type="submit" class="btn-primary" value="Submit">
+</form>
+        
+{% endif %}
+
+{% endblock %}

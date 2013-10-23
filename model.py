@@ -42,6 +42,13 @@ def post_to_wall(user_id, author_id, datetime, content):
     DB.execute(query, (user_id, author_id, datetime, content))
     CONN.commit()
 
+def get_last_five_posts():
+    connect_to_db()
+    query = """SELECT P.id, P.created_at, U1.username AS owner_name, U2.username AS author_name, P.content from wall_posts AS P LEFT JOIN users AS U1 ON (U1.id = P.owner_id) LEFT JOIN users AS U2 ON (U2.id = P.author_id) ORDER BY P.id DESC LIMIT 5"""
+    DB.execute(query)
+    rows = DB.fetchall()
+    return rows
+
 def register_new_user(username, password):
     connect_to_db()
     query = """INSERT into users(username, password) VALUES (?,?)"""

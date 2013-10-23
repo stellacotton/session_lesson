@@ -8,11 +8,16 @@ app.secret_key = "shhhhthisisasecret"
 @app.route("/")
 def index():
     if session.get("username"):
-        flash("User %s is logged in"%session['actual_username'])
+        # flash("User %s is logged in"%session['actual_username'])
         username = session['actual_username']
-        return redirect("/user/%s"%username)  
+        return redirect(url_for("show_newsfeed"))
     else:
         return render_template("index.html")
+
+@app.route("/feed")
+def show_newsfeed():
+    rows = model.get_last_five_posts()
+    return render_template("newsfeed.html", wall_posts = rows)
 
 @app.route("/", methods=["POST"])
 def process_login():
@@ -21,7 +26,6 @@ def process_login():
 
     auth_user = model.authenticate(username, password)
     if auth_user != None:
-        flash("User authenticated!")
         session['username'] = auth_user
         session['actual_username'] = username
     else:
@@ -33,7 +37,7 @@ def process_login():
 def view_user(username):
     user_id = model.get_user_by_name(username)
     wall_posts = model.get_wall_posts(user_id)
-    return render_template("wall.html", wall_posts = wall_posts, session_id = session['username'], username = username)
+    return render_template("wall.html", wall_posts = wall_posts, session_id = session['username'], username = username, profile_owner = session['actual_username'])
 
 @app.route("/user/<username>/post", methods=["POST"])
 def post_to_wall(username):
@@ -69,6 +73,16 @@ def create_account():
         else:
             flash("You already exist!")
             return redirect(url_for("register"))
+
+@app.route("/search", methods=["POST"])
+def search_user():
+    username_to_search = request.form.get("search")
+    model.get_user_by_name(username_to_search)
+    if model.get_user_by_name(username_to_search) == "Nope":
+            flash("User not found")
+            return redirect(request.referrer)
+    else:
+        return redirect("/user/%s"%username_to_search)
 
 
 @app.route("/logout")
